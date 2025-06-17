@@ -23,23 +23,32 @@
  * SOFTWARE.
 **/
 
+#if defined(_WIN32)
+// include windows.h before cstddef as otherwise you get this error:
+//
+// C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\rpcndr.h(203, 9): error C2872: 'byte': ambiguous symbol
+// C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\rpcndr.h(202, 23): message: could be 'unsigned char byte'
+// C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\cstddef(34, 24): message: or       'std::byte'
+//
+#include <windows.h>
+#endif
 
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <cstddef>
 #ifndef HAVE_MPI
 #include <stdexcept>
 #endif
 
 #include "somoclu.h"
-#ifndef HAVE_R
-using namespace std;
-#endif
+
 // From https://stackoverflow.com/questions/17432502/how-can-i-measure-cpu-time-and-wall-clock-time-on-both-linux-windows
 //  Windows
 #ifdef _WIN32
-#include <Windows.h>
-double get_wall_time(){
+//#include <windows.h>
+
+double get_wall_time(void){
     LARGE_INTEGER time,freq;
     if (!QueryPerformanceFrequency(&freq)){
         //  Handle error
